@@ -1,0 +1,47 @@
+{
+  "name": "test01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build-watch": "set NODE_ENV=development && webpack --progress --colors --watch --config ./config/webpack.config.babel.js",
+    "build-dev": "set NODE_ENV=development && webpack --config ./config/webpack.config.babel.js --progress",
+    "build-pro": "set NODE_ENV=production && webpack --config ./config/webpack.production.config.babel.js --progress",
+    "dev-server": "webpack-dev-server --open --config ./config/webpack.config.babel.js",
+    "node-server": "node server/server-dev.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^8.1.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-import": "^1.6.6",
+    "babel-plugin-react-transform": "^3.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.10",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.0.6",
+    "postcss-loader": "^2.1.1",
+    "react-transform-hmr": "^1.0.4",
+    "style-loader": "^0.20.3",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.11",
+    "webpack-dev-server": "^3.1.1"
+  },
+  "dependencies": {
+    "antd": "^3.2.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "multer": "^1.3.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8"
+  }
+}
