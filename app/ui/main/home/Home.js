@@ -3,15 +3,15 @@ import React from 'react'
 
 class Home extends React.Component{
     render(){
+        const { value, onIncreaseClick } = this.props;
         return (
             <div>
-                <div>导航</div>
-                <div>Wecome</div>
+                <span>{value}</span>
+                <button onClick={onIncreaseClick}>Increase</button>
             </div>
         );
     }
 }
-
 
 
 export default Home;

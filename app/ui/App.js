@@ -1,5 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Route, Link } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { createStore} from 'redux'
 import LoginPage from './login/LoginPage'
 import MainPage from './main/MainPage'
 // import style from './App.css'
