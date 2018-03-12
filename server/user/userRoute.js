@@ -16,6 +16,15 @@ module.exports = function(app){
         res.end(JSON.stringify(data));
     });
 
+    app.post('/api/main/user/:userId',function(req,res){
+        let data = {
+            isSuccess:true,
+            content :
+                {id:1,name:'wang01'}
+            }
+        res.end(JSON.stringify(data));
+    });
+
 
 
 }

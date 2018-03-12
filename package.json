@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build-watch": "set NODE_ENV=development && webpack --progress --colors --watch --config ./config/webpack.config.babel.js",
-    "build-dev": "set NODE_ENV=development && webpack --config ./config/webpack.config.babel.js --progress",
-    "build-pro": "set NODE_ENV=production && webpack --config ./config/webpack.production.config.babel.js --progress",
+    "build-watch": "webpack --progress --colors --watch --config ./config/webpack.config.babel.js",
+    "build-dev": "webpack --config ./config/webpack.config.babel.js --progress",
+    "build-pro": "webpack --config ./config/webpack.production.config.babel.js --progress",
     "dev-server": "webpack-dev-server --open --config ./config/webpack.config.babel.js",
     "node-server": "node server/server-dev.js"
   },

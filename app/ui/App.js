@@ -1,19 +1,35 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Route, Link } from 'react-router-dom'
 import LoginPage from './login/LoginPage'
 import MainPage from './main/MainPage'
-import AppStyle from './App.css'
+// import style from './App.css'
 
-export default class App extends React.Component{
+/**
+ * 整个应用的布局
+ */
+class AppLayout extends React.Component{
     render(){
         return (
-            <Router>
-                <div className={AppStyle.root}>
-                    <Route exact path={"/"} component={LoginPage}></Route>
-                    <Route exact path={"/index.html"} component={LoginPage}></Route>
-                    <Route path={"/main"} component={MainPage}></Route>
-                </div>
-            </Router>
+            <div>
+                <Route exact path={"/"} component={LoginPage}></Route>
+                <Route exact path={"/index.html"} component={LoginPage}></Route>
+                <Route path={"/main"} component={MainPage}></Route>
+            </div>
+    );
+    }
+}
+
+/**
+ * App组件
+ */
+class App extends React.Component{
+    render(){
+        return (
+            <BrowserRouter>
+                <AppLayout />
+            </BrowserRouter>
         );
     }
 }
+
+export default App;
