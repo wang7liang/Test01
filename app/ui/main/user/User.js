@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, Switch } from 'react-router-dom'
 
 
 
@@ -7,7 +7,7 @@ class UserNav extends React.Component{
     render(){
         return (
             <div>
-                UserNav
+                <Link to={'/main/user/add'}>新增</Link>
             </div>
         );
     }
@@ -96,6 +96,8 @@ class UserProfile extends React.Component{
         this.state = {
             data:{}
         }
+
+        this.handleBack = this.handleBack.bind(this);
     }
 
     componentDidMount(){
@@ -125,11 +127,16 @@ class UserProfile extends React.Component{
         });
     }
 
+    handleBack(event){
+        this.props.history.push("/main/user")
+    }
+
     render(){
         return (
             <div>
                 id:{this.state.data.id} <br/>
                 name:{this.state.data.name} <br/>
+                <button onClick={this.handleBack} >返回列表</button>
             </div>
         );
     }
@@ -139,10 +146,34 @@ class UserProfile extends React.Component{
  * 新增
  */
 class UserAdd extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {
+            data:{}
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentDidMount(){
+    }
+
+    handleSubmit(event){
+        let data = {
+            id: this.refs.id.value,
+            name: this.refs.name.value
+        }
+
+        this.props.history.push("/main/user")
+    }
+
     render(){
         return (
             <div>
-                UserAdd
+                id: <input type="text" name={'id'} ref={'id'}  /><br/>
+                name: <input type="text" name={'name'} ref={'name'} /><br/>
+                <button onClick={this.handleSubmit} >提交</button>
             </div>
         );
     }
@@ -215,10 +246,12 @@ class User extends React.Component{
         return (
             <div>
                 <Route path={this.props.match.path} component={UserNav} ></Route>
-                <Route path={this.props.match.path} exact component={UserList} ></Route>
-                <Route path={this.props.match.path+'/:userId'} exact component={UserProfile} ></Route>
-                <Route path={this.props.match.path+'/:userId/add'} component={UserAdd} ></Route>
-                <Route path={this.props.match.path+'/:userId/edit'} component={UserEdit} ></Route>
+                <Switch>
+                    <Route path={this.props.match.path} exact component={UserList} ></Route>
+                    <Route path={this.props.match.path+'/add'} exact component={UserAdd} ></Route>
+                    <Route path={this.props.match.path+'/:userId'} exact component={UserProfile} ></Route>
+                    <Route path={this.props.match.path+'/:userId/edit'} component={UserEdit} ></Route>
+                </Switch>
             </div>
         );
     }

@@ -40,7 +40,7 @@ class LoginPage extends React.Component{
     render(){
         return (
             <div className={require('./LoginPage.css').root}>
-                登陆画面:{JSON.stringify(this.props.match)}<br/>
+                登陆画面<br/>
                 <input type="text" name={'username'} ref={'username'} /><br/>
                 <input type="passwrod" name={"passwrod"} ref={'passwrod'} /><br/>
                 <button onClick={this.handleLogin} >登陆</button>

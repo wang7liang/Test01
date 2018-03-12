@@ -29,7 +29,7 @@ class MainPage extends React.Component{
         return (
             <div>
                 <header>
-                    <Link to={"/main/user"}>管理系统</Link>
+                    <Link to={"/main"}>管理系统</Link>
                 </header>
                 <Menu />
                 <main>
