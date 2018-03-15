@@ -10,11 +10,12 @@ export default {
 
     mode: "production",
     devtool: 'null',
-    entry: path.join(__dirname,'../app/index.js'),
+    entry: path.resolve(__dirname,'../app/index.js'),
     output: {
-        path: path.join(__dirname,'../public'),
+        path: path.resolve(__dirname,'../public'),
         filename: '[name].[hash:8].bundle.js',
-        publicPath: ""
+        publicPath: "/",
+        chunkFilename: '[name].chunk.js'
     },
     module: {
         rules: [
@@ -44,11 +45,11 @@ export default {
     plugins: [
         new webpack.BannerPlugin('版权所有，翻版必究'),
         new HtmlWebpackPlugin({
-            template: path.join(__dirname , "../app/index.tmpl.html"),
+            template: path.resolve(__dirname , "../app/index.tmpl.html"),
             filename: 'index.html'
         }),
         new CleanWebpackPlugin(['main.*.js'], {
-            root: path.join(__dirname,'../public'),
+            root: path.resolve(__dirname,'../public'),
             verbose: true,
             dry: false,
         }),

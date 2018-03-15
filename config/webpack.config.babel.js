@@ -11,14 +11,15 @@ export default {
     entry: path.join(__dirname,'../app/index.js'),
     output: {
         path: path.join(__dirname,'../build'),
-        filename: 'bundle.js'
+        filename: 'bundle.js',
+        publicPath: "/",
+        chunkFilename: '[name].chunk.js'
     },
     devServer: {
         contentBase: path.join(__dirname,'../build'),
         historyApiFallback: true,
         inline: true,
         port: 8000,
-        hot: true,
         proxy: {
             '/api/*': {
                 target: 'http://127.0.0.1:8888',
@@ -56,8 +57,7 @@ export default {
         new webpack.BannerPlugin('版权所有，翻版必究'),
         new HtmlWebpackPlugin({
             template: path.join(__dirname , "../app/index.tmpl.html")
-        }),
-        new webpack.HotModuleReplacementPlugin()
+        })
     ]
 
 }

@@ -1,10 +1,15 @@
 import React from 'react'
-import { BrowserRouter, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { createStore} from 'redux'
+import { createStore } from 'redux'
+import rootReducer from '../reducer/allReducer'
 import LoginPage from './login/LoginPage'
 import MainPage from './main/MainPage'
 // import style from './App.css'
+
+
+const store = createStore(rootReducer);
+
 
 /**
  * 整个应用的布局
@@ -27,9 +32,11 @@ class AppLayout extends React.Component{
 class App extends React.Component{
     render(){
         return (
-            <BrowserRouter>
-                <AppLayout />
-            </BrowserRouter>
+            <Provider store={store}>
+                <BrowserRouter>
+                    <AppLayout />
+                </BrowserRouter>
+            </Provider>
         );
     }
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+import { connect } from 'react-redux';
 
 class LoginPage extends React.Component{
 
@@ -49,4 +50,4 @@ class LoginPage extends React.Component{
     }
 }
 
-export default withRouter(LoginPage);
+export default connect()(withRouter(LoginPage));

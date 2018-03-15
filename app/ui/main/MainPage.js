@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
 import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux';
 import style from  './MainPage.css'
 import Menu from './menu/Menu'
 import Home from './home/Home'
@@ -44,4 +45,4 @@ class MainPage extends React.Component{
     }
 }
 
-export default MainPage;
+export default connect()(MainPage);
