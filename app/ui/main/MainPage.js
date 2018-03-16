@@ -8,6 +8,7 @@ import Home from './home/Home'
 import User from './user/User'
 import Premission from './premission/Premission'
 import Role from './role/Role'
+import Jcr from './jcr/Jcr'
 
 let MainContentLayout = withRouter(class MainContentLayout extends React.Component{
     render(){
@@ -17,6 +18,7 @@ let MainContentLayout = withRouter(class MainContentLayout extends React.Compone
                 <Route path={this.props.match.path+'/user'} component={User}></Route>
                 <Route path={this.props.match.path+'/premission'} component={Premission}></Route>
                 <Route path={this.props.match.path+'/role'} component={Role}></Route>
+                <Route path={this.props.match.path+'/jcr'} component={Jcr}></Route>
             </div>
         );
     }

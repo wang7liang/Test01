@@ -4,11 +4,11 @@
 import { combineReducers } from 'redux'
 
 import homeReducer from './homeReducer'
-import userReducer from './userReducer'
+import jcrReducer from './jcrReducer'
 
 const rootReducer = combineReducers({
     homeReducer,
-    userReducer
+    jcrReducer
 });
 
 export default rootReducer

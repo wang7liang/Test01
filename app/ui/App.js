@@ -1,14 +1,16 @@
 import React from 'react'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 import rootReducer from '../reducer/allReducer'
 import LoginPage from './login/LoginPage'
 import MainPage from './main/MainPage'
 // import style from './App.css'
 
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer,applyMiddleware(thunk));
+// const store = createStore(rootReducer);
 
 
 /**
