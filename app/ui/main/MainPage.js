@@ -34,7 +34,9 @@ class MainPage extends React.Component{
                 <header>
                     <Link to={"/main"}>管理系统</Link>
                 </header>
+
                 <Menu />
+
                 <main>
                     <MainContentLayout />
                 </main>

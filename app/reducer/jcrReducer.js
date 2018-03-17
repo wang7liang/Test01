@@ -2,12 +2,14 @@
  * Created by wangqiliang on 2018/3/13.
  */
 
-function jcrReducer(state = {path: '/'}, action) {
+function jcrReducer(state = {life:'Init', scheme:[], data:[], path:'/'}, action) {
     switch(action.type){
-        case 'changePath':
-            return {path: action.path};
-        case 'receive_data':
-            return {data: action.data};
+        case 'loadedScheme':
+            return Object.assign({}, state, { life:'LoadedScheme',scheme:action.scheme });
+        case 'loadedData':
+            return Object.assign({}, state, { life:'LoadedData',data:action.data });
+        case 'clickPath':
+            return Object.assign({}, state, { life:'LoadedScheme',path: action.path });
         default:
             return state;
     }

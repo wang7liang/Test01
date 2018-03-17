@@ -18,52 +18,21 @@ class JcrNav extends React.Component{
  * 列表项
  */
 
-// function clickPathActionCreater(path) {
-//     return {
-//         type: 'changePath',
-//         path: path
-//     }
-// }
-//
-// function mapDispatchToProps(dispatch,nextProps){
-//     return {
-//         handlePathClick: function(){
-//             dispatch(clickPathActionCreater(nextProps.item.path));
-//         }
-//     };
-// }
-
-
-function fetchPosts(dispatch,path){
-    return function(){
-        const option = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({path:path}),
-            credentials: 'include'
-        };
-        fetch('/api/main/jcr/nodes',option)
-            .then(res=>res.json)
-            // .then(json=>dispatch({type: 'receive_data',data: json}));
-            .then(function(json){
-                dispatch({type: 'receive_data',data: json})
-            }).catch(function(e){
-                alert(e);
-        })
+function clickPathActionCreater(path) {
+    return {
+        type: 'clickPath',
+        path: path
     }
 }
-
-function mapDispatchToProps(dispatch,nextProps){
+function mapDispatchToPropsItem(dispatch,nextProps){
     return {
-        handlePathClick: function(){
-            dispatch(fetchPosts(dispatch,nextProps.item.path));
+        handlePathClick: function(e){
+            e.preventDefault();
+            dispatch(clickPathActionCreater(nextProps.item.path));
         }
     };
 }
-
-let JcrItem = connect(function(){return {}},mapDispatchToProps)(
+let JcrItem = connect(function(){return {}},mapDispatchToPropsItem)(
     class JcrItem extends React.Component{
         constructor(props){
             super(props);
@@ -94,98 +63,179 @@ let JcrItem = connect(function(){return {}},mapDispatchToProps)(
 /**
  * 列表
  */
-
-function mapStateToProps(state){
+function loadedSchemeActionCreater(scheme) {
     return {
-        path: state.jcrReducer.path,
-        data: state.jcrReducer.data
-    };
+        type: 'loadedScheme',
+        scheme: scheme
+    }
 }
-let JcrList = connect(mapStateToProps)(
-    class JcrList extends React.Component{
-        constructor(props){
-            super(props);
+function loadedDataActionCreater(data) {
+    return {
+        type: 'loadedData',
+        data: data
+    }
+}
+function mapDispatchToPropsList(dispatch){
+    return {
+        changeLife: function(life,path){
+            dispatch(changeLifeActionCreater(life,path));
+        },
 
-            this.state = {
-                path: '/',
-                data: []
-            }
-
-        }
-
-        componentWillReceiveProps(){
-            // const option = {
-            //     method: 'post',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({path:this.props.path}),
-            //     credentials: 'include'
-            // };
-            // // const option = {
-            // //     method: 'GET'
-            // // };
-            // fetch('/api/main/jcr/nodes',option).then(res=>{
-            //     return res.json();
-            // }).then(data=>{
-            //     if(!data.success){
-            //         alert('数据获取失败')
-            //     }else{
-            //         this.setState({
-            //             data : data.content
-            //         });
-            //     }
-            // }).catch(function(e){
-            //     alert(e);
-            // });
-        }
-
-        componentDidMount(){
+        loadScheme: function(){
             const option = {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({path:this.props.path}),
+                body: JSON.stringify({}),
                 credentials: 'include'
             };
-            // const option = {
-            //     method: 'GET'
-            // };
+
+            fetch('/api/main/jcr/nodes/scheme',option).then(res=>{
+                return res.json();
+            }).then(data=>{
+                if(!data.success){
+                    alert('数据获取失败')
+                }else{
+                    dispatch(loadedSchemeActionCreater(data.content));
+                }
+            }).catch(function(e){
+                alert(e);
+            });
+        },
+
+        loadData:function(path){
+            const option = {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({path:path}),
+                credentials: 'include'
+            };
+
             fetch('/api/main/jcr/nodes',option).then(res=>{
                 return res.json();
             }).then(data=>{
                 if(!data.success){
                     alert('数据获取失败')
                 }else{
-                    this.setState({
-                        data : data.content
-                    });
+                    // alert(JSON.stringify(data))
+                    dispatch(loadedDataActionCreater(data.content));
                 }
             }).catch(function(e){
                 alert(e);
             });
         }
+    };
+}
+function mapStateToPropsList(state){
+    return {
+        life: state.jcrReducer.life,
+        scheme: state.jcrReducer.scheme,
+        data: state.jcrReducer.data,
+        path: state.jcrReducer.path
+    };
+}
+let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
+    class JcrList extends React.Component{
 
+        constructor(props){
+            super(props);
+        }
+
+        componentWillMount(){
+            // 服务器端和客户端都只调用一次，在初始化渲染执行之前立刻调用。
+            // 如果在这个方法内调用setState，render() 将会感知到更新后的state，将会执行仅一次，尽管 state 改变了。
+
+            // 综上所述，在此处加载scheme是最好的时机
+            // alert('componentWillMount')
+
+            // this.setState({life:'LoadingScheme'});
+            this.props.loadScheme();
+        }
+
+        componentDidMount(){
+            // 在初始化渲染执行之后立刻调用一次，仅客户端有效（服务器端不会调用）。
+            // 在生命周期中的这个时间点，组件拥有一个DOM 展现，你可以通过 this.getDOMNode() 来获取相应 DOM 节点。
+
+            // 综上所述，在此处异步加载数据是最好的时机
+            // alert('componentDidMount')
+        }
+
+        shouldComponentUpdate(nextProps,nextStates){
+            // 在接收到新的props 或者 state，将要渲染之前调用。
+            // 该方法在初始化渲染的时候不会调用，在使用 forceUpdate 方法的时候也不会。
+
+            // 综上所述，在此处做性能优化，无需更新时返回false
+            // alert('shouldComponentUpdate');
+
+            if(nextProps.life=='Init'){
+                return false;
+            }else if(nextProps.life=='LoadingScheme'){
+                return false;
+            }else if(nextProps.life=='LoadedScheme'){
+                // this.setState({life: 'LoadingData'});
+                this.props.loadData(this.props.path);
+                return false;
+            }else if(nextProps.life=='LoadingData'){
+                return false;
+            }else if(nextProps.life=='LoadedData'){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        componentWillUpdate(){
+            // 在接收到新的props 或者 state 之前立刻调用。
+            // 在初始化渲染的时候该方法不会被调用。
+
+            // 综上所述，在此处做一些更新之前的准备工作。
+            // alert('componentWillUpdate')
+        }
+
+        componentDidUpdate(){
+            // 在组件的更新已经同步到DOM 中之后立刻被调用。
+            // 该方法不会在初始化渲染的时候调用。
+
+            // 综上所述，在此处做一些更新之后的操作。
+            // alert('componentDidUpdate')
+        }
+
+        componentWillUnmount(){
+            // 在组件从DOM 中移除的时候立刻被调用。
+
+            // 综上所述，在此处做一些清理工作。
+            // alert('componentWillUnmount')
+        }
+
+        componentWillReceiveProps(nextProps){
+            // alert('componentWillReceiveProps:'+JSON.stringify(nextProps))
+        }
 
         render(){
-            return (
-                <div>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td>id</td>
-                            <td>name</td>
-                            <td>path</td>
-                            <td>type</td>
-                        </tr>
-                        { this.state.data.map(function(item,i){
-                            return <JcrItem key={i} item={item} />
-                        })}
-                        </tbody>
-                    </table>
-                </div>
-            );
+            let renderContent = ''
+            if(this.props.life=='LoadedData'){
+                renderContent =
+                    <div>
+                        <table>
+                            <tbody>
+                            <tr>
+                                {this.props.scheme.col.map(function(item,i){
+                                    return  <td key={i}>{item.title}</td>
+                                })}
+                            </tr>
+                            {this.props.data.map(function(item,i){
+                                return <JcrItem key={i} item={item} />
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
+            }else{
+            }
+
+            return (renderContent);
         }
     }
 );
