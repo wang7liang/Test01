@@ -120,7 +120,6 @@ function mapDispatchToPropsList(dispatch){
                 if(!data.success){
                     alert('数据获取失败')
                 }else{
-                    // alert(JSON.stringify(data))
                     dispatch(loadedDataActionCreater(data.content));
                 }
             }).catch(function(e){
@@ -145,68 +144,48 @@ let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
         }
 
         componentWillMount(){
-            // 服务器端和客户端都只调用一次，在初始化渲染执行之前立刻调用。
-            // 如果在这个方法内调用setState，render() 将会感知到更新后的state，将会执行仅一次，尽管 state 改变了。
-
-            // 综上所述，在此处加载scheme是最好的时机
-            // alert('componentWillMount')
-
-            // this.setState({life:'LoadingScheme'});
             this.props.loadScheme();
         }
 
         componentDidMount(){
-            // 在初始化渲染执行之后立刻调用一次，仅客户端有效（服务器端不会调用）。
-            // 在生命周期中的这个时间点，组件拥有一个DOM 展现，你可以通过 this.getDOMNode() 来获取相应 DOM 节点。
-
-            // 综上所述，在此处异步加载数据是最好的时机
             // alert('componentDidMount')
         }
 
         shouldComponentUpdate(nextProps,nextStates){
-            // 在接收到新的props 或者 state，将要渲染之前调用。
-            // 该方法在初始化渲染的时候不会调用，在使用 forceUpdate 方法的时候也不会。
-
-            // 综上所述，在此处做性能优化，无需更新时返回false
             // alert('shouldComponentUpdate');
-
-            if(nextProps.life=='Init'){
+            if(nextProps.location.key!=this.props.location.key){
+                this.props.loadData("/");
                 return false;
-            }else if(nextProps.life=='LoadingScheme'){
-                return false;
-            }else if(nextProps.life=='LoadedScheme'){
-                // this.setState({life: 'LoadingData'});
-                this.props.loadData(this.props.path);
-                return false;
-            }else if(nextProps.life=='LoadingData'){
-                return false;
-            }else if(nextProps.life=='LoadedData'){
-                return true;
             }else{
-                return false;
+                if(nextProps.life=='Init'){
+                    return false;
+                }else if(nextProps.life=='LoadingScheme'){
+                    return false;
+                }else if(nextProps.life=='LoadedScheme'){
+                    // this.setState({life: 'LoadingData'});
+                    this.props.loadData(this.props.path);
+                    return false;
+                }else if(nextProps.life=='LoadingData'){
+                    return false;
+                }else if(nextProps.life=='LoadedData'){
+                    return true;
+                }else{
+                    return false;
+                }
             }
+
+            return false;
         }
 
         componentWillUpdate(){
-            // 在接收到新的props 或者 state 之前立刻调用。
-            // 在初始化渲染的时候该方法不会被调用。
-
-            // 综上所述，在此处做一些更新之前的准备工作。
             // alert('componentWillUpdate')
         }
 
         componentDidUpdate(){
-            // 在组件的更新已经同步到DOM 中之后立刻被调用。
-            // 该方法不会在初始化渲染的时候调用。
-
-            // 综上所述，在此处做一些更新之后的操作。
             // alert('componentDidUpdate')
         }
 
         componentWillUnmount(){
-            // 在组件从DOM 中移除的时候立刻被调用。
-
-            // 综上所述，在此处做一些清理工作。
             // alert('componentWillUnmount')
         }
 

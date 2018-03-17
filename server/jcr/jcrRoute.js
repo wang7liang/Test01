@@ -19,9 +19,9 @@ module.exports = function(app){
                     ]
             }
         }
-        setTimeout(function(){
+        // setTimeout(function(){
             res.end(JSON.stringify(data));
-        },5000)
+        // },1000)
 
     });
 
