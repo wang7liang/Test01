@@ -45,14 +45,15 @@ let JcrItem = connect(function(){return {}},mapDispatchToPropsItem)(
 
         render(){
             const {handlePathClick} = this.props;
-
+            const filePath = this.props.item.path.substring(0,this.props.item.path.lastIndexOf("\/"))
+            const fileSavedName = this.props.item.path.substring(this.props.item.path.lastIndexOf("\/")+1)
             return (
                 <tr>
                     <td>{this.props.item.id}</td>
                     <td>{this.props.item.type=='nt:folder' ? <a href='#' onClick={handlePathClick}>{this.props.item.name}</a> : this.props.item.name}</td>
                     <td>{this.props.item.path}</td>
                     <td>{this.props.item.type}</td>
-                    <td>{this.props.item.type=='nt:file' ? <a href='#' onClick={this.handleDownload}>下载</a> : null}</td>
+                    <td>{this.props.item.type=='nt:file' ? <a href={'http://127.0.0.1:9008/jcr/file/download?filePath='+filePath+'&fileSavedName='+fileSavedName} >下载</a> : null}</td>
                     <td>{this.props.item.type=='nt:file' ? <a href='#' onClick={this.handleUpdate}>更新</a> : null}</td>
                     <td><Link to={'/main/jcr/'+this.props.item.id+'/edit'}>删除</Link></td>
                 </tr>
