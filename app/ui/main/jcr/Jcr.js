@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 
 
+
 class JcrNav extends React.Component{
     render(){
         return (
@@ -17,18 +18,11 @@ class JcrNav extends React.Component{
 /**
  * 列表项
  */
-
-function clickPathActionCreater(path) {
-    return {
-        type: 'clickPath',
-        path: path
-    }
-}
 function mapDispatchToPropsItem(dispatch,nextProps){
     return {
         handlePathClick: function(e){
             e.preventDefault();
-            dispatch(clickPathActionCreater(nextProps.item.path));
+            commonLoadData(dispatch,nextProps.item.path);
         }
     };
 }
@@ -36,6 +30,17 @@ let JcrItem = connect(function(){return {}},mapDispatchToPropsItem)(
     class JcrItem extends React.Component{
         constructor(props){
             super(props);
+
+            this.handleDownload = this.handleDownload.bind(this);
+            this.handleUpdate = this.handleUpdate.bind(this);
+        }
+
+        handleDownload(){
+
+        }
+
+        handleUpdate(){
+
         }
 
         render(){
@@ -47,7 +52,9 @@ let JcrItem = connect(function(){return {}},mapDispatchToPropsItem)(
                     <td>{this.props.item.type=='nt:folder' ? <a href='#' onClick={handlePathClick}>{this.props.item.name}</a> : this.props.item.name}</td>
                     <td>{this.props.item.path}</td>
                     <td>{this.props.item.type}</td>
-                    <td><Link to={'/main/jcr/'+this.props.item.id+'/edit'}>编辑</Link></td>
+                    <td>{this.props.item.type=='nt:file' ? <a href='#' onClick={this.handleDownload}>下载</a> : null}</td>
+                    <td>{this.props.item.type=='nt:file' ? <a href='#' onClick={this.handleUpdate}>更新</a> : null}</td>
+                    <td><Link to={'/main/jcr/'+this.props.item.id+'/edit'}>删除</Link></td>
                 </tr>
             );
         }
@@ -60,80 +67,60 @@ let JcrItem = connect(function(){return {}},mapDispatchToPropsItem)(
 
 
 
+
 /**
  * 列表
  */
-function loadedSchemeActionCreater(scheme) {
-    return {
-        type: 'loadedScheme',
-        scheme: scheme
-    }
-}
 function loadedDataActionCreater(data) {
     return {
         type: 'loadedData',
         data: data
     }
 }
+
+function clearDataActionCreater(){
+    return {
+        type: 'clearData',
+        data: []
+    }
+}
+
+function commonLoadData(dispatch,path){
+    const option = {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({path:path}),
+        credentials: 'include'
+    };
+
+    fetch('/api/main/jcr/nodes',option).then(res=>{
+        return res.json();
+    }).then(data=>{
+        if(!data.success){
+            alert('数据获取失败')
+        }else{
+            dispatch(loadedDataActionCreater(data.content));
+        }
+    }).catch(function(e){
+        alert(e);
+    });
+}
+
 function mapDispatchToPropsList(dispatch){
     return {
-        changeLife: function(life,path){
-            dispatch(changeLifeActionCreater(life,path));
-        },
-
-        loadScheme: function(){
-            const option = {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({}),
-                credentials: 'include'
-            };
-
-            fetch('/api/main/jcr/nodes/scheme',option).then(res=>{
-                return res.json();
-            }).then(data=>{
-                if(!data.success){
-                    alert('数据获取失败')
-                }else{
-                    dispatch(loadedSchemeActionCreater(data.content));
-                }
-            }).catch(function(e){
-                alert(e);
-            });
-        },
-
         loadData:function(path){
-            const option = {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({path:path}),
-                credentials: 'include'
-            };
-
-            fetch('/api/main/jcr/nodes',option).then(res=>{
-                return res.json();
-            }).then(data=>{
-                if(!data.success){
-                    alert('数据获取失败')
-                }else{
-                    dispatch(loadedDataActionCreater(data.content));
-                }
-            }).catch(function(e){
-                alert(e);
-            });
+            commonLoadData(dispatch,path);
+        },
+        clearData:function(){
+            dispatch(clearDataActionCreater());
         }
     };
 }
 function mapStateToPropsList(state){
     return {
-        life: state.jcrReducer.life,
-        scheme: state.jcrReducer.scheme,
-        data: state.jcrReducer.data,
-        path: state.jcrReducer.path
+        data: state.jcrReducer.data
     };
 }
 let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
@@ -144,37 +131,21 @@ let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
         }
 
         componentWillMount(){
-            this.props.loadScheme();
+            // alert('componentWillMount')
         }
 
         componentDidMount(){
             // alert('componentDidMount')
+            this.props.loadData(this.props.path);
         }
 
         shouldComponentUpdate(nextProps,nextStates){
             // alert('shouldComponentUpdate');
-            if(nextProps.location.key!=this.props.location.key){
-                this.props.loadData("/");
-                return false;
-            }else{
-                if(nextProps.life=='Init'){
-                    return false;
-                }else if(nextProps.life=='LoadingScheme'){
-                    return false;
-                }else if(nextProps.life=='LoadedScheme'){
-                    // this.setState({life: 'LoadingData'});
-                    this.props.loadData(this.props.path);
-                    return false;
-                }else if(nextProps.life=='LoadingData'){
-                    return false;
-                }else if(nextProps.life=='LoadedData'){
-                    return true;
-                }else{
-                    return false;
-                }
-            }
 
-            return false;
+            if(nextProps.data==this.props.data){
+                return false;
+            }
+            return true;
         }
 
         componentWillUpdate(){
@@ -187,6 +158,7 @@ let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
 
         componentWillUnmount(){
             // alert('componentWillUnmount')
+            this.props.clearData();
         }
 
         componentWillReceiveProps(nextProps){
@@ -194,16 +166,15 @@ let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
         }
 
         render(){
-            let renderContent = ''
-            if(this.props.life=='LoadedData'){
-                renderContent =
+            return (
                     <div>
                         <table>
                             <tbody>
                             <tr>
-                                {this.props.scheme.col.map(function(item,i){
-                                    return  <td key={i}>{item.title}</td>
-                                })}
+                                <td>id</td>
+                                <td>name</td>
+                                <td>path</td>
+                                <td>type</td>
                             </tr>
                             {this.props.data.map(function(item,i){
                                 return <JcrItem key={i} item={item} />
@@ -211,10 +182,7 @@ let JcrList = connect(mapStateToPropsList,mapDispatchToPropsList)(
                             </tbody>
                         </table>
                     </div>
-            }else{
-            }
-
-            return (renderContent);
+            );
         }
     }
 );
@@ -279,39 +247,96 @@ class JcrProfile extends React.Component{
 /**
  * 新增
  */
-class JcrAdd extends React.Component{
-    constructor(props){
-        super(props);
 
-        this.state = {
-            data:{}
-        }
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
 
-    componentDidMount(){
-    }
 
-    handleSubmit(event){
-        let data = {
-            id: this.refs.id.value,
-            name: this.refs.name.value
-        }
 
-        this.props.history.push("/main/jcr")
-    }
 
-    render(){
-        return (
-            <div>
-                id: <input type="text" name={'id'} ref={'id'}  /><br/>
-                name: <input type="text" name={'name'} ref={'name'} /><br/>
-                <button onClick={this.handleSubmit} >提交</button>
-            </div>
-        );
+
+
+
+function changeSelectActionCreater(retData){
+    return {
+        type: 'changeSelect',
+        retData: retData
     }
 }
+
+function mapDispatchToPropsAdd(dispatch){
+    return {
+        changeSelect:function(retData){
+            dispatch(changeSelectActionCreater(retData));
+        }
+    };
+}
+function mapStateToPropsAdd(state){
+    return {
+        retData: state.jcrReducer.retData
+    };
+}
+let JcrAdd = connect(mapStateToPropsAdd,mapDispatchToPropsAdd)(
+    class JcrAdd extends React.Component{
+        constructor(props){
+            super(props);
+
+            this.handleChange = this.handleChange.bind(this);
+            this.handleSubmit = this.handleSubmit.bind(this);
+        }
+
+        componentDidMount(){
+        }
+
+        handleChange(event){
+            let formData = new FormData();
+            formData.append('file',this.refs.file.files[0])
+
+            const option = {
+                method: 'post',
+                body: formData,
+                credentials: 'include'
+            };
+
+            fetch('/api/main/jcr/file/upload',option).then(res=>{
+                return res.json();
+            }).then(data=>{
+                data.filePath = '/test01';
+                data.fileType = '1111';
+                this.props.changeSelect(data);
+            }).catch(function(e){
+                alert(e);
+            });
+        }
+
+        handleSubmit(event){
+            const option = {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.props.retData),
+                credentials: 'include'
+            };
+
+            fetch('/api/main/jcr/file/confirm', option).then(res=>{
+                return res;
+            }).then(data=>{
+                this.props.history.push("/main/jcr")
+            }).catch(function(e){
+                alert(e);
+            });
+        }
+
+        render(){
+            return (
+                <div>
+                    文件: <input type="file" ref="file" onChange={this.handleChange} /><br/>
+                    <button onClick={this.handleSubmit} >提交</button>
+                </div>
+            );
+        }
+    }
+)
 
 /**
  * 编辑

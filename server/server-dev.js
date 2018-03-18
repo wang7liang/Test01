@@ -19,7 +19,7 @@ let app = new express();
 app.use(express.static(path.join(__dirname,'../public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: '/tmp/'}).array('image'));
+// app.use(multer({ dest: '/tmp/'}).array('image'));
 
 
 loginRoute(app);
